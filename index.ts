@@ -5,6 +5,7 @@ import { successResponse } from "./src/swagger/success-response";
 import { BaseController } from "./src/controllers/base-controller";
 import { HttpResponse } from "./src/entities/http-response";
 import { statusCode } from "./src/swagger/status-code";
+import { writeSwagger } from "./src/docs/swagger";
 
 export {
   createApiServer,
@@ -15,5 +16,6 @@ export {
   BaseController,
   // Swagger
   successResponse,
-  statusCode
+  statusCode,
+  writeSwagger
 };
