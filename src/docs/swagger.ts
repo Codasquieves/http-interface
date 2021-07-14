@@ -12,7 +12,8 @@ import { routingControllersToSpec } from "routing-controllers-openapi";
 export const writeSwagger = (
   title: string,
   version: string,
-  controllers: Function[]
+  controllers: Function[],
+  fileName?: string,
 ): void => {
   const schemas = validationMetadatasToSchemas({
     refPointerPrefix: "#/components/schemas/"
@@ -32,7 +33,7 @@ export const writeSwagger = (
   );
 
   const swagger = YAML.stringify(spec);
-  writeFileSync("bank-swagger.yml", swagger, {
+  writeFileSync(fileName ?? `${title.toLowerCase()}_${version}.yml`, swagger, {
     encoding: "utf-8"
   });
 }

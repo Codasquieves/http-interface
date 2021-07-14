@@ -9,12 +9,14 @@ import { ErrorHandlerMiddleware } from "./middleware/error-handler-middleware";
 import { LogRequestMiddleware } from "./middleware/log-request-middleware";
 import type { HttpServerConfig } from "./http-server-config"
 import type { HttpServer } from "./types";
+import { CorsMiddleware } from "./middleware/cors-middleware";
 
 const registerContainer = (config: HttpServerConfig): Container => {
   const container = new Container();
 
   container.bind(LogRequestMiddleware).toSelf();
   container.bind(HelmetMiddleware).toSelf();
+  container.bind(CorsMiddleware).toSelf();
   container.bind(ErrorHandlerMiddleware).toSelf();
   container.bind(HttpResponseInterceptor).toSelf();
 
@@ -38,10 +40,12 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
   useContainer(adapter);
 
   return createExpressServer({
+    authorizationChecker: config.authorizationChecker,
     classTransformer: false,
     controllers: config.controllers,
+    currentUserChecker: config.currentUserChecker,
     interceptors: [HttpResponseInterceptor],
-    middlewares: [HelmetMiddleware, ErrorHandlerMiddleware, LogRequestMiddleware]
+    middlewares: [HelmetMiddleware, CorsMiddleware, ErrorHandlerMiddleware, LogRequestMiddleware]
   }) as HttpServer;
 };
 
