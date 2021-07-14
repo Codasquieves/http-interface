@@ -1,7 +1,7 @@
 import { isNullOrUndefined } from "util";
 import { Container } from "inversify";
 import { useContainer, createExpressServer } from "routing-controllers";
-import { BatchLogger, ConsoleLogger, Logger } from "@codasquieves/logger";
+import { BatchLogger, ConsoleLogger, LogConfig, Logger } from "@codasquieves/logger";
 import { InversifyAdapter } from "./adapters/inversify-adapter"
 import { HttpResponseInterceptor } from "./interceptors/http-response-interceptor";
 import { HelmetMiddleware } from "./middleware/helmet-middleware";
@@ -20,10 +20,12 @@ const registerContainer = (config: HttpServerConfig): Container => {
   container.bind(ErrorHandlerMiddleware).toSelf();
   container.bind(HttpResponseInterceptor).toSelf();
 
+  container.bind(LogConfig).toConstantValue(config);
+
   if (config.batchLogger ?? false) {
-    container.bind(Logger).toConstantValue(new BatchLogger(config));
+    container.bind(Logger).to(BatchLogger).inSingletonScope();
   } else {
-    container.bind(Logger).toConstantValue(new ConsoleLogger(config));
+    container.bind(Logger).to(ConsoleLogger).inSingletonScope();
   }
 
   if (!isNullOrUndefined(config.register)) {
@@ -44,6 +46,7 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
     classTransformer: false,
     controllers: config.controllers,
     currentUserChecker: config.currentUserChecker,
+    defaultErrorHandler: false,
     interceptors: [HttpResponseInterceptor],
     middlewares: [HelmetMiddleware, CorsMiddleware, ErrorHandlerMiddleware, LogRequestMiddleware]
   }) as HttpServer;

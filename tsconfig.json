@@ -40,10 +40,10 @@
     "src",
     "test",
     "index.ts",
-    "typings"
+    "typings",
+    "fake"
   ],
   "exclude": [
     "node_modules"
   ]
 }
-
