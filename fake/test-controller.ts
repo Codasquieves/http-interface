@@ -9,8 +9,7 @@ import { HttpResponse } from "../index";
 export class TestController {
   @Get("/")
   public async test(): Promise<ControllerResponse> {
-    throw Error();
     await Promise.resolve();
-    return HttpResponse.parse(Result.success());
+    return HttpResponse.parse(Result.conflict());
   }
 }

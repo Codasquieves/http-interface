@@ -1,4 +1,3 @@
-import { isNullOrUndefined } from "util";
 import { classToPlain } from "class-transformer";
 import type { Response } from "express";
 import type { Action, InterceptorInterface } from "routing-controllers";
@@ -17,12 +16,7 @@ class HttpResponseInterceptor implements InterceptorInterface {
     const response = action.response as Response;
 
     response.status(result.statusCode);
-
-    if (isNullOrUndefined(result.body)) {
-      return null;
-    }
-
-    return classToPlain(result.body);
+    return classToPlain(result.body ?? {});
   }
 }
 export { HttpResponseInterceptor };

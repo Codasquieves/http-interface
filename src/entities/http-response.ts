@@ -1,9 +1,9 @@
 import { isNullOrUndefined } from "util";
-import type { Result} from "@codasquieves/base";
+import type { Result } from "@codasquieves/base";
 import { ResultType } from "@codasquieves/base";
 import * as StatusCodes from "http-status-codes";
 
-const parseStatus = {
+const parseStatus: Record<ResultType, number> = {
   [ResultType.success]: StatusCodes.OK,
   [ResultType.created]: StatusCodes.CREATED,
   [ResultType.process_async]: StatusCodes.ACCEPTED,
