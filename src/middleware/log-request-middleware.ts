@@ -15,9 +15,10 @@ export class LogRequestMiddleware implements ExpressMiddlewareInterface {
     const params: Record<string, unknown> = {
       body: request.body,
       headers: request.headers,
+      method: request.method,
       params: request.params,
       query: request.query,
-      url: request.url
+      url: request.url,
     };
 
     Object.keys(params).forEach((key) => {

@@ -8,6 +8,5 @@ export interface HttpServerConfig extends LogConfig {
   authorizationChecker?: AuthorizationChecker,
   // eslint-disable-next-line @typescript-eslint/ban-types
   controllers?: Function[];
-  batchLogger?: boolean;
   register?: (container: Container) => void;
 }
