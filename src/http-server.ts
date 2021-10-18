@@ -5,20 +5,24 @@ import { BaseLogger, LogConfig, Logger } from "@codasquieves/logger";
 import { HttpResponseInterceptor } from "./interceptors/http-response-interceptor";
 import { HelmetMiddleware } from "./middleware/helmet-middleware";
 import { ErrorHandlerMiddleware } from "./middleware/error-handler-middleware";
-import { LogRequestMiddleware } from "./middleware/log-request-middleware";
 import type { HttpServerConfig } from "./http-server-config"
 import type { HttpServer } from "./types";
+import { InversifyAdapter } from "./adapters/inversify-adapter";
 
 const registerContainer = (config: HttpServerConfig): Container => {
   const container = new Container();
 
-  container.bind(LogRequestMiddleware).toSelf();
+  // Before
   container.bind(HelmetMiddleware).toSelf();
+
+  // After
   container.bind(ErrorHandlerMiddleware).toSelf();
+
+  // Interceptors
   container.bind(HttpResponseInterceptor).toSelf();
 
   container.bind(LogConfig).toConstantValue(config);
-  container.bind(Logger).to(BaseLogger).inSingletonScope();
+  container.bind(Logger).to(BaseLogger).inRequestScope();
 
   if (!isNullOrUndefined(config.register)) {
     config.register(container);
@@ -28,7 +32,8 @@ const registerContainer = (config: HttpServerConfig): Container => {
 };
 
 const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
-  useContainer(registerContainer(config));
+  const inversify = new InversifyAdapter(registerContainer(config));
+  useContainer(inversify);
 
   return createExpressServer({
     authorizationChecker: config.authorizationChecker,
@@ -39,9 +44,11 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
     defaultErrorHandler: false,
     interceptors: [HttpResponseInterceptor],
     middlewares: [
+      // After
       HelmetMiddleware,
+
+      // Before
       ErrorHandlerMiddleware,
-      LogRequestMiddleware
     ],
   }) as HttpServer;
 };
