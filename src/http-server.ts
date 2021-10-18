@@ -8,21 +8,22 @@ import { ErrorHandlerMiddleware } from "./middleware/error-handler-middleware";
 import type { HttpServerConfig } from "./http-server-config"
 import type { HttpServer } from "./types";
 import { InversifyAdapter } from "./adapters/inversify-adapter";
+import { IocMiddleware } from "./middleware/ioc-middleware";
+import { LogRequestMiddleware } from "./middleware/log-request-middleware";
 
-const registerContainer = (config: HttpServerConfig): Container => {
-  const container = new Container();
+// eslint-disable-next-line @typescript-eslint/init-declarations
+export let baseContainer: () => Container;
 
-  // Before
-  container.bind(HelmetMiddleware).toSelf();
-
-  // After
-  container.bind(ErrorHandlerMiddleware).toSelf();
+const defaulRegister = (config: HttpServerConfig): Container => {
+  const container = new Container({
+    defaultScope: "Singleton"
+  });
 
   // Interceptors
   container.bind(HttpResponseInterceptor).toSelf();
 
   container.bind(LogConfig).toConstantValue(config);
-  container.bind(Logger).to(BaseLogger).inRequestScope();
+  container.bind(Logger).to(BaseLogger);
 
   if (!isNullOrUndefined(config.register)) {
     config.register(container);
@@ -32,8 +33,17 @@ const registerContainer = (config: HttpServerConfig): Container => {
 };
 
 const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
-  const inversify = new InversifyAdapter(registerContainer(config));
-  useContainer(inversify);
+  const adapter = new InversifyAdapter(
+    [
+      IocMiddleware,
+      HelmetMiddleware,
+      ErrorHandlerMiddleware,
+      HttpResponseInterceptor,
+      LogRequestMiddleware,
+    ]
+  );
+  useContainer(adapter);
+  baseContainer = (): Container => defaulRegister(config);
 
   return createExpressServer({
     authorizationChecker: config.authorizationChecker,
@@ -45,7 +55,9 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
     interceptors: [HttpResponseInterceptor],
     middlewares: [
       // After
+      IocMiddleware,
       HelmetMiddleware,
+      LogRequestMiddleware,
 
       // Before
       ErrorHandlerMiddleware,

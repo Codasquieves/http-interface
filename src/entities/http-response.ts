@@ -16,13 +16,16 @@ const parseStatus: Record<ResultType, number> = {
 };
 
 export class HttpResponse {
-  public body?: unknown;
+  public readonly body?: unknown;
 
-  public statusCode: number;
+  public readonly statusCode: number;
+
+  public readonly headers: Record<string, string>;
 
   public constructor(statusCode: number, body?: unknown) {
     this.statusCode = statusCode;
     this.body = body;
+    this.headers = {};
   }
 
   public static parse(applicationResult: Result): HttpResponse {
@@ -34,5 +37,9 @@ export class HttpResponse {
     }
 
     return new HttpResponse(status, body);
+  }
+
+  public addHeader(key: string, value: string): void {
+    this.addHeader(key, value);
   }
 }

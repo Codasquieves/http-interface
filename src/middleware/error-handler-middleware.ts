@@ -1,18 +1,20 @@
-import type { Request, Response } from "express";
+import { Logger } from "@codasquieves/logger";
+import type { Response } from "express";
 import { INTERNAL_SERVER_ERROR } from "http-status-codes";
+import { injectable } from "inversify";
 import type { ExpressErrorMiddlewareInterface } from "routing-controllers";
 import { Middleware } from "routing-controllers";
-import { inject, injectable } from "inversify";
-import { Logger } from "@codasquieves/logger";
+import type { RequestContainer } from "../types";
 
 @injectable()
 @Middleware({ type: "after" })
 export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
-  @inject(Logger)
-  private readonly logger!: Logger;
 
-  public error(error: Error, _request: Request, res: Response): void {
-    this.logger.error("InternalServerError", error);
+  public error(error: Error, request: RequestContainer, res: Response): void {
+    const logger = request.ioc.get(Logger);
+
+    logger.error("InternalServerError", error);
+    
     res.status(INTERNAL_SERVER_ERROR).end();
   }
 }

@@ -1,24 +1,26 @@
-import { isNullOrUndefined } from "util";
+/* eslint-disable @typescript-eslint/ban-types */
 import type { Container } from "inversify";
-import type { ClassConstructor, IocAdapter } from "routing-controllers";
+import { get } from "lodash";
+import type { Action, ClassConstructor, IocAdapter } from "routing-controllers";
 
 export class InversifyAdapter implements IocAdapter {
-  private readonly container: Container;
+  private readonly toIgnore: ClassConstructor<Object>[];
 
-  private readonly register?: (container: Container) => void;
-
-  public constructor(container: Container, register?: (container: Container) => void) {
-    this.container = container;
-    this.register = register;
+  public constructor(toIgnore: ClassConstructor<Object>[] = []) {
+    this.toIgnore = toIgnore;
   }
 
-  public get<T>(type: ClassConstructor<T>): T {
-    const child = this.container.createChild();
-
-    if (!isNullOrUndefined(this.register)) {
-      this.register(child);
+  public get<T>(type: ClassConstructor<T>, action?: Action): T {
+    if (this.toIgnore.includes(type)) {
+      return new type();
     }
 
-    return child.get<T>(type);
+    const container = get(action, "request.ioc", null) as Container | null;
+
+    if (container === null) {
+      throw Error(`${type.name}: not in container`);
+    }
+
+    return container.get<T>(type);
   }
 }

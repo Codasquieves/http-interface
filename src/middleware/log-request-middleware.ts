@@ -1,17 +1,15 @@
 import type { ExpressMiddlewareInterface } from "routing-controllers";
 import { Middleware } from "routing-controllers";
-import type { NextFunction, Request, Response } from "express";
-import { inject, injectable } from "inversify";
-import { Logger } from "@codasquieves/logger";
+import type { NextFunction, Response } from "express";
+import { injectable } from "inversify";
 import { isEmpty } from "lodash";
+import { Logger } from "@codasquieves/logger";
+import type { RequestContainer } from "../types";
 
 @injectable()
 @Middleware({ type: "before" })
 export class LogRequestMiddleware implements ExpressMiddlewareInterface {
-  @inject(Logger)
-  private readonly logger!: Logger;
-
-  public use(request: Request, response: Response, next: NextFunction): void {
+  public use(request: RequestContainer, response: Response, next: NextFunction): void {
     const params: Record<string, unknown> = {
       body: request.body,
       headers: request.headers,
@@ -28,9 +26,11 @@ export class LogRequestMiddleware implements ExpressMiddlewareInterface {
       }
     })
 
-    response.header("x-correlation-id", this.logger.correlationId);
+    const logger = request.ioc.get(Logger);
 
-    this.logger.debug("Request", params);
+    response.header("x-correlation-id", logger.correlationId);
+
+    logger.debug("Request", params);
 
     next();
   }
