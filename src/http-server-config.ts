@@ -9,4 +9,5 @@ export interface HttpServerConfig extends LogConfig {
   // eslint-disable-next-line @typescript-eslint/ban-types
   controllers?: Function[];
   register?: (container: Container) => void;
+  cors?: boolean;
 }
