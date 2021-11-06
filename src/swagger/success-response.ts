@@ -8,5 +8,5 @@ export const successResponse = (responseClass: any, isArray = false): CallableFu
   ResponseSchema(responseClass as Function, {
     description: "Success",
     isArray,
-    statusCode: OK
+    statusCode: OK,
   });

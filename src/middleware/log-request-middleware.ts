@@ -24,7 +24,7 @@ export class LogRequestMiddleware implements ExpressMiddlewareInterface {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete params[key];
       }
-    })
+    });
 
     const logger = request.ioc.get(Logger);
 

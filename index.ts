@@ -15,5 +15,5 @@ export {
   // Swagger
   successResponse,
   statusCode,
-  writeSwagger
+  writeSwagger,
 };

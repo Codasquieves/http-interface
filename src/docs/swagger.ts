@@ -9,14 +9,9 @@ import * as YAML from "json-to-pretty-yaml";
 import { getMetadataArgsStorage } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 
-export const writeSwagger = (
-  title: string,
-  version: string,
-  controllers: Function[],
-  fileName?: string,
-): void => {
+export const writeSwagger = (title: string, version: string, controllers: Function[], fileName?: string): void => {
   const schemas = validationMetadatasToSchemas({
-    refPointerPrefix: "#/components/schemas/"
+    refPointerPrefix: "#/components/schemas/",
   });
 
   const storage = getMetadataArgsStorage();
@@ -24,16 +19,16 @@ export const writeSwagger = (
   const spec = routingControllersToSpec(
     storage,
     {
-      controllers
+      controllers,
     },
     {
       components: { schemas },
-      info: { title, version }
+      info: { title, version },
     }
   );
 
   const swagger = YAML.stringify(spec);
   writeFileSync(fileName ?? `${title.toLowerCase()}_${version}.yml`, swagger, {
-    encoding: "utf-8"
+    encoding: "utf-8",
   });
-}
+};

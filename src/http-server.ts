@@ -5,7 +5,7 @@ import { BaseLogger, LogConfig, Logger } from "@codasquieves/logger";
 import { HttpResponseInterceptor } from "./interceptors/http-response-interceptor";
 import { HelmetMiddleware } from "./middleware/helmet-middleware";
 import { ErrorHandlerMiddleware } from "./middleware/error-handler-middleware";
-import type { HttpServerConfig } from "./http-server-config"
+import type { HttpServerConfig } from "./http-server-config";
 import type { HttpServer } from "./types";
 import { InversifyAdapter } from "./adapters/inversify-adapter";
 import { IocMiddleware } from "./middleware/ioc-middleware";
@@ -16,7 +16,7 @@ export let baseContainer: () => Container;
 
 const defaulRegister = (config: HttpServerConfig): Container => {
   const container = new Container({
-    defaultScope: "Singleton"
+    defaultScope: "Singleton",
   });
 
   // Interceptors
@@ -33,15 +33,13 @@ const defaulRegister = (config: HttpServerConfig): Container => {
 };
 
 const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
-  const adapter = new InversifyAdapter(
-    [
-      IocMiddleware,
-      HelmetMiddleware,
-      ErrorHandlerMiddleware,
-      HttpResponseInterceptor,
-      LogRequestMiddleware,
-    ]
-  );
+  const adapter = new InversifyAdapter([
+    IocMiddleware,
+    HelmetMiddleware,
+    ErrorHandlerMiddleware,
+    HttpResponseInterceptor,
+    LogRequestMiddleware,
+  ]);
   useContainer(adapter);
   baseContainer = (): Container => defaulRegister(config);
 
@@ -62,6 +60,7 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
       // Before
       ErrorHandlerMiddleware,
     ],
+    routePrefix: config.routePrefix,
   }) as HttpServer;
 };
 
