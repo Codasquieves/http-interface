@@ -1,4 +1,3 @@
-import { classToPlain } from "class-transformer";
 import type { Response } from "express";
 import { injectable } from "inversify";
 import type { Action, InterceptorInterface } from "routing-controllers";
@@ -9,14 +8,16 @@ import { HttpResponse } from "../entities/http-response";
 @injectable()
 class HttpResponseInterceptor implements InterceptorInterface {
   public intercept(action: Action, result: unknown): unknown {
+    const response = action.response as Response
+
     if (!(result instanceof HttpResponse)) {
       return result;
     }
 
-    const response = action.response as Response;
-
-    response.status(result.statusCode);
-    return classToPlain(result.body ?? {});
+    result.headers.forEach(([key, value]) => response.set(key, value))
+    response.status(result.statusCode)
+    
+    return result.body;
   }
 }
 export { HttpResponseInterceptor };

@@ -6,8 +6,9 @@ import type { CurrentUserChecker } from "routing-controllers/types/CurrentUserCh
 export interface HttpServerConfig extends LogConfig {
   currentUserChecker?: CurrentUserChecker;
   authorizationChecker?: AuthorizationChecker;
-  // eslint-disable-next-line @typescript-eslint/ban-types
   controllers?: Function[];
+  middlewares?: Function[];
+  interceptors?: Function[];
   register?: (container: Container) => void;
   cors?: boolean;
   routePrefix?: string;

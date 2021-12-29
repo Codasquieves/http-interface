@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { writeFileSync } from "fs";
 import { validationMetadatasToSchemas } from "class-validator-jsonschema";
-import * as YAML from "json-to-pretty-yaml";
+import YAML from "js-yaml";
 import { getMetadataArgsStorage } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
 
@@ -27,7 +22,8 @@ export const writeSwagger = (title: string, version: string, controllers: Functi
     }
   );
 
-  const swagger = YAML.stringify(spec);
+  const swagger = YAML.dump(spec);
+
   writeFileSync(fileName ?? `${title.toLowerCase()}_${version}.yml`, swagger, {
     encoding: "utf-8",
   });

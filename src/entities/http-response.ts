@@ -1,7 +1,7 @@
 import { isNullOrUndefined } from "util";
 import type { Result } from "@codasquieves/base";
 import { ResultType } from "@codasquieves/base";
-import * as StatusCodes from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 
 const parseStatus: Record<ResultType, number> = {
   [ResultType.success]: StatusCodes.OK,
@@ -20,12 +20,12 @@ export class HttpResponse {
 
   public readonly statusCode: number;
 
-  public readonly headers: Record<string, string>;
+  private readonly _headers: Record<string, string>;
 
   public constructor(statusCode: number, body?: unknown) {
     this.statusCode = statusCode;
     this.body = body;
-    this.headers = {};
+    this._headers = {};
   }
 
   public static parse(applicationResult: Result): HttpResponse {
@@ -40,6 +40,10 @@ export class HttpResponse {
   }
 
   public addHeader(key: string, value: string): void {
-    this.addHeader(key, value);
+    this._headers[key] = value;
+  }
+
+  public get headers(): [string, string][] {
+    return Object.keys(this._headers).map((key) => [key, this._headers[key]])
   }
 }

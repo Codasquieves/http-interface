@@ -74,7 +74,7 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
 
     next();
   });
-  
+
   useExpressServer(app, {
     authorizationChecker: config.authorizationChecker,
     classTransformer: false,
@@ -82,16 +82,23 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
     cors: config.cors ?? false,
     currentUserChecker: config.currentUserChecker,
     defaultErrorHandler: false,
-    interceptors: [HttpResponseInterceptor],
+    defaults: {
+      nullResultCode: StatusCodes.NO_CONTENT,
+      undefinedResultCode: StatusCodes.NO_CONTENT,
+    },
+    interceptors: [
+      ...(config.interceptors ?? []),
+      HttpResponseInterceptor,
+    ],
+    middlewares: config.middlewares,
     routePrefix: config.routePrefix,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
     const request = req as RequestContainer;
     const logger = request.ioc.get(Logger);
 
-    logger.error("InternalServerError", error);
+    logger.error("internal-server-error", error);
 
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
   });
