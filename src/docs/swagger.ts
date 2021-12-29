@@ -3,9 +3,12 @@ import { validationMetadatasToSchemas } from "class-validator-jsonschema";
 import YAML from "js-yaml";
 import { getMetadataArgsStorage } from "routing-controllers";
 import { routingControllersToSpec } from "routing-controllers-openapi";
+import { defaultMetadataStorage } from "class-transformer/cjs/storage";
+import type { MetadataStorage } from "class-transformer/types/MetadataStorage";
 
 export const writeSwagger = (title: string, version: string, controllers: Function[], fileName?: string): void => {
   const schemas = validationMetadatasToSchemas({
+    classTransformerMetadataStorage: defaultMetadataStorage as MetadataStorage,
     refPointerPrefix: "#/components/schemas/",
   });
 
