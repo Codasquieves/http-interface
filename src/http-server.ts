@@ -82,10 +82,6 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
     cors: config.cors ?? false,
     currentUserChecker: config.currentUserChecker,
     defaultErrorHandler: false,
-    defaults: {
-      nullResultCode: StatusCodes.NO_CONTENT,
-      undefinedResultCode: StatusCodes.NO_CONTENT,
-    },
     interceptors: [
       ...(config.interceptors ?? []),
       HttpResponseInterceptor,

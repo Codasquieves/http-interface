@@ -17,7 +17,7 @@ class HttpResponseInterceptor implements InterceptorInterface {
     result.headers.forEach(([key, value]) => response.set(key, value))
     response.status(result.statusCode)
     
-    return result.body;
+    return result.body ?? {};
   }
 }
 export { HttpResponseInterceptor };
