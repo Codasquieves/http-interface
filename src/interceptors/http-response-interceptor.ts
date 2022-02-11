@@ -8,15 +8,15 @@ import { HttpResponse } from "../entities/http-response";
 @injectable()
 class HttpResponseInterceptor implements InterceptorInterface {
   public intercept(action: Action, result: unknown): unknown {
-    const response = action.response as Response
+    const response = action.response as Response;
 
     if (!(result instanceof HttpResponse)) {
       return result;
     }
 
-    result.headers.forEach(([key, value]) => response.set(key, value))
-    response.status(result.statusCode)
-    
+    result.headers.forEach(([key, value]) => response.set(key, value));
+    response.status(result.statusCode);
+
     return result.body ?? {};
   }
 }

@@ -5,7 +5,7 @@ import { Container } from "inversify";
 import { useContainer, useExpressServer } from "routing-controllers";
 import { BaseLogger, LogConfig, Logger } from "@codasquieves/logger";
 import helmet from "helmet";
-import { isEmpty } from "lodash";
+import { get, isEmpty, isUndefined } from "lodash";
 import { StatusCodes } from "http-status-codes";
 import { HttpResponseInterceptor } from "./interceptors/http-response-interceptor";
 import type { HttpServerConfig } from "./http-server-config";
@@ -31,7 +31,7 @@ const createContainer = (config: HttpServerConfig): Container => {
 
 const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
   const containerAdapter = new InversifyAdapter();
-  useContainer(containerAdapter)
+  useContainer(containerAdapter);
 
   const app = express();
 
@@ -82,10 +82,7 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
     cors: config.cors ?? false,
     currentUserChecker: config.currentUserChecker,
     defaultErrorHandler: false,
-    interceptors: [
-      ...(config.interceptors ?? []),
-      HttpResponseInterceptor,
-    ],
+    interceptors: [...(config.interceptors ?? []), HttpResponseInterceptor],
     middlewares: config.middlewares,
     routePrefix: config.routePrefix,
   });
@@ -94,12 +91,21 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
     const request = req as RequestContainer;
     const logger = request.ioc.get(Logger);
 
+    const errorHttpCode = get(error, "httpCode", undefined) as number | undefined;
+
+    const expectedHttpCodes = [StatusCodes.UNAUTHORIZED as number];
+
+    if (!isUndefined(errorHttpCode) && expectedHttpCodes.includes(errorHttpCode)) {
+      res.sendStatus(errorHttpCode).end();
+      return;
+    }
+
     logger.error("internal-server-error", error);
 
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
   });
 
-  return app as HttpServer
+  return app as HttpServer;
 };
 
 export { createApiServer };

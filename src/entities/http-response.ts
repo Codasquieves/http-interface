@@ -44,6 +44,6 @@ export class HttpResponse {
   }
 
   public get headers(): [string, string][] {
-    return Object.keys(this._headers).map((key) => [key, this._headers[key]])
+    return Object.keys(this._headers).map((key) => [key, this._headers[key]]);
   }
 }

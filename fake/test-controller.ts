@@ -15,8 +15,10 @@ export class TestController {
   public test(@Body() body: unknown): HttpResponse {
     this.logger.info("POST: Test", { body });
 
-    return HttpResponse.parse(Result.success({
-      id: new Date()
-    }));
+    return HttpResponse.parse(
+      Result.success({
+        id: new Date(),
+      })
+    );
   }
 }

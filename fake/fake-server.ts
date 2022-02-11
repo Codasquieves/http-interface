@@ -13,7 +13,7 @@ export class FakeServer {
       logLevel: LogLevel.debug,
       register: (container: Container) => {
         container.bind(TestController).toSelf();
-      }
+      },
     });
   }
 }
