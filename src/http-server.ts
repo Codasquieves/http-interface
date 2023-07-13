@@ -11,6 +11,7 @@ import { HttpResponseInterceptor } from "./interceptors/http-response-intercepto
 import type { HttpServerConfig } from "./http-server-config";
 import type { HttpServer, RequestContainer } from "./types";
 import { InversifyAdapter } from "./adapters/inversify-adapter";
+import type { HttpError } from "./http-error";
 
 const createContainer = (config: HttpServerConfig): Container => {
   const container = new Container({
@@ -87,11 +88,11 @@ const createApiServer = (config: HttpServerConfig = {}): HttpServer => {
     routePrefix: config.routePrefix,
   });
 
-  app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
+  app.use((error: HttpError, req: Request, res: Response, _next: NextFunction) => {
     const request = req as RequestContainer;
     const logger = request.ioc.get(Logger);
 
-    const errorHttpCode = get(error, "httpCode", undefined) as number | undefined;
+    const errorHttpCode = get(error, "httpCode")
 
     const expectedHttpCodes = [StatusCodes.UNAUTHORIZED as number];
 

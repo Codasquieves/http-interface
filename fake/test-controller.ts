@@ -18,7 +18,7 @@ export class TestController {
     return HttpResponse.parse(
       Result.success({
         id: new Date(),
-      })
+      }),
     );
   }
 }

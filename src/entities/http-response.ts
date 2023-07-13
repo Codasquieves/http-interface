@@ -28,8 +28,12 @@ export class HttpResponse {
     this._headers = {};
   }
 
+  public get headers(): [string, string][] {
+    return Object.keys(this._headers).map((key) => [key, this._headers[key]]);
+  }
+
   public static parse(applicationResult: Result): HttpResponse {
-    let status = parseStatus[applicationResult.event];
+    let status = parseStatus[applicationResult.event] as StatusCodes;
     const body = isNullOrUndefined(applicationResult.data) ? undefined : applicationResult.data;
 
     if (isNullOrUndefined(body) && status === StatusCodes.OK) {
@@ -41,9 +45,5 @@ export class HttpResponse {
 
   public addHeader(key: string, value: string): void {
     this._headers[key] = value;
-  }
-
-  public get headers(): [string, string][] {
-    return Object.keys(this._headers).map((key) => [key, this._headers[key]]);
-  }
+  }  
 }

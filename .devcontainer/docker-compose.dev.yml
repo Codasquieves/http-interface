@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  dev-http-interface:
+    build:
+      dockerfile: Dockerfile.dev
+      context: .
+    platform: linux/arm64
+    command: "sleep infinity"
+    volumes:
+      - ..:/app

@@ -1,0 +1,7 @@
+codasquieves
+inversify
+openapi
+sonarjs
+sonarjs
+metadatas
+mocharc

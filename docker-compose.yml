@@ -2,7 +2,8 @@ version: "3.6"
 
 services:
   http-interface:
-    image: node:12.14.1-alpine
+    image: node:20-alpine
+    platform: linux/arm64/v8
     working_dir: "/project"
     volumes:
       - .:/project

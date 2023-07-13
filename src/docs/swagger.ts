@@ -20,9 +20,9 @@ export const writeSwagger = (title: string, version: string, controllers: Functi
       controllers,
     },
     {
-      components: { schemas },
+      components: schemas,
       info: { title, version },
-    }
+    },
   );
 
   const swagger = YAML.dump(spec);
